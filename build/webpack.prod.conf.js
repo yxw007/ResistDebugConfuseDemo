@@ -7,9 +7,10 @@ const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 // 屏蔽默认加载方式
 // const env = require('../config/prod.env')
@@ -25,6 +26,7 @@ if (process.env.TYPE == 'test') {
 //-------------------------------------------------------------------------
 
 const webpackConfig = merge(baseWebpackConfig, {
+  mode: 'production',
   module: {
     rules: utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
@@ -43,15 +45,41 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.DefinePlugin({
       'process.env': env
     }),
-    new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          warnings: false
-        }
-      },
-      sourceMap: config.build.productionSourceMap,
-      parallel: true
-    }),
+    new UglifyJsPlugin(
+      {
+        uglifyOptions: {
+          compress: {
+            warnings: false,
+             /* 移除没被引用的代码 */
+             dead_code: true,
+             /* 当 Function(args, code)的args 和 code都是字符串时，压缩并混淆 */
+             // unsafe_Func: true,
+             /* 干掉没有被引用的函数和变量 */
+             unused: true,
+             /* 干掉顶层作用域中没有被引用的函数或变量 */
+             toplevel: true,
+             /* 干掉console.*函数 */
+             drop_console: true,
+             /* 干掉Debugger*/
+             drop_debugger: true,
+             /* 压缩代码次数 注意：数字越大压缩耗时越长 */
+             passes: 1,
+             /* 传true以防止压缩时把1/0转成Infinity，那可能会在chrome上有性能问题 */
+             keep_infinity: true
+          },
+           mangle: {
+             properties: {
+               // keep_fnames: false,
+               regex: /(^__|^m_)\w+/,
+               // reserved: ["$", "iv", "mode", "padding", "CryptoJS"]
+             }
+           }
+        },
+        // extractComments: true,
+        sourceMap: config.build.productionSourceMap,
+        parallel: true
+      }
+    ),
     // extract css into its own file
     new ExtractTextPlugin({
       filename: utils.assetsPath('css/[name].[contenthash].css'),
@@ -65,8 +93,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     // duplicated CSS from different components can be deduped.
     new OptimizeCSSPlugin({
       cssProcessorOptions: config.build.productionSourceMap
-        ? { safe: true, map: { inline: false } }
-        : { safe: true }
+        ? {safe: true, map: {inline: false}}
+        : {safe: true}
     }),
     // generate dist index.html with correct asset hash for caching.
     // you can customize output by editing /index.html
@@ -90,9 +118,9 @@ const webpackConfig = merge(baseWebpackConfig, {
     // enable scope hoisting
     new webpack.optimize.ModuleConcatenationPlugin(),
     // split vendor js into its own file
-    new webpack.optimize.CommonsChunkPlugin({
+    /*new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      minChunks (module) {
+      minChunks(module) {
         // any required modules inside node_modules are extracted to vendor
         return (
           module.resource &&
@@ -117,7 +145,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       async: 'vendor-async',
       children: true,
       minChunks: 3
-    }),
+    }),*/
 
     // copy custom static assets
     new CopyWebpackPlugin([
@@ -127,7 +155,21 @@ const webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ]
+  ],
+  optimization: {
+    noEmitOnErrors: true,
+    concatenateModules: true,
+    splitChunks: {
+      chunks: 'all',
+      name: 'common',
+    },
+    runtimeChunk: {
+      name: 'runtime'
+    },
+    minimizer: [
+      new UglifyJsPlugin()
+    ]
+  }
 })
 
 if (config.build.productionGzip) {

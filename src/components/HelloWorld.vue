@@ -1,16 +1,16 @@
 <template>
   <div class="hello">
-    <h3>{{aes_title}}</h3>
+    <h3>{{m_aesTitle}}</h3>
     <div style="display: flex;">
       <div class="block">
         <p>①明文加密 =>
-          <button v-on:click="aesEncrypt">加密</button>
+          <button v-on:click="__onClickAesEncrypt">加密</button>
         </p>
         <textarea ref="aesPlainText" rows="5" cols="15"></textarea>
       </div>
       <div class="block">
         <p>②密文解密 =>
-          <button v-on:click="aesDecrypt">解密</button>
+          <button v-on:click="__onClickAesDecrypt">解密</button>
         </p>
         <textarea ref="aesCiphertext" rows="5" cols="15"></textarea>
       </div>
@@ -19,17 +19,17 @@
         <textarea ref="aesDecryptedCiphertext" rows="5" cols="15"></textarea>
       </div>
     </div>
-    <h3>{{rsa_title}}</h3>
+    <h3>{{m_rsaTitle}}</h3>
     <div style="display: flex;">
       <div class="block">
         <p>①明文加密 =>
-          <button v-on:click="rsaEncrypt()">加密</button>
+          <button v-on:click="__onClickRsaEncrypt()">加密</button>
         </p>
         <textarea ref="rsaPlaintext" rows="5" cols="15"></textarea>
       </div>
       <div class="block">
         <p>②密文解密 =>
-          <button v-on:click="rsaDecrypt()">解密</button>
+          <button v-on:click="__onClickRSADecrypt()">解密</button>
         </p>
         <textarea ref="rsaCiphertext" rows="5" cols="15"></textarea>
       </div>
@@ -39,19 +39,19 @@
       </div>
     </div>
     /* IFTRUE_isBeta */
-    <h3>{{hybird_title}}</h3>
+    <h3>{{m_hybirdTitle}}</h3>
     /*FITRUE_isBeta */
-    /* IFTRUE_isRelase */
+    /* IFTRUE_isRelease */
     <div style="display: flex;">
       <div class="block">
         <p>①明文加密 =>
-          <button v-on:click="hybirdEncrypt">加密</button>
+          <button v-on:click="__onClickHybirdEncrypt">加密</button>
         </p>
         <textarea ref="hybirdPlaintext" rows="5" cols="15"></textarea>
       </div>
       <div class="block">
         <p>②密文解密 =>
-          <button v-on:click="hybirdDecrypt">解密</button>
+          <button v-on:click="__onClickHybirdDecrypt">解密</button>
         </p>
         <textarea ref="hybirdCiphertext" rows="5" cols="15"></textarea>
       </div>
@@ -60,7 +60,7 @@
         <textarea ref="hybirdDecryptedCiphertext" rows="5" cols="15"></textarea>
       </div>
     </div>
-    /*FITRUE_isRelase */
+    /*FITRUE_isRelease */
   </div>
 </template>
 
@@ -75,17 +75,17 @@
     },
     data() {
       return {
-        aes_title: "AES 对称加密demo",
-        key: "",
-        iv: "",
-        rsa_title: "RSA 非对称加密demo",
-        rsa_pub_key: "-----BEGIN PUBLIC KEY-----\n" +
+        m_aesTitle: "AES 对称加密demo",
+        m_aesKey: "",
+        m_aesIV: "",
+        m_rsaTitle: "RSA 非对称加密demo",
+        m_rsaPubKey: "-----BEGIN PUBLIC KEY-----\n" +
           "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC2aV1AoO8GUVSPBdasXnmD0tiY\n" +
           "JutVZ1hB5PeS22We4oMIVW/9mKuvPv1ouZPJrMfpDBgQRhBZ5c1Y/3Oti8jP5ihE\n" +
           "qeTQ08ShnUmbkUVPxXPM5TQQgxaTHjyELM7IEUipYtb1dqRtKsvJr725Pnszf6nz\n" +
           "tJvoTBKs7fydMZBkxwIDAQAB\n" +
           "-----END PUBLIC KEY-----\n",
-        rsa_pri_key: "-----BEGIN RSA PRIVATE KEY-----\n" +
+        m_rsaPriKey: "-----BEGIN RSA PRIVATE KEY-----\n" +
           "MIICXAIBAAKBgQC2aV1AoO8GUVSPBdasXnmD0tiYJutVZ1hB5PeS22We4oMIVW/9\n" +
           "mKuvPv1ouZPJrMfpDBgQRhBZ5c1Y/3Oti8jP5ihEqeTQ08ShnUmbkUVPxXPM5TQQ\n" +
           "gxaTHjyELM7IEUipYtb1dqRtKsvJr725Pnszf6nztJvoTBKs7fydMZBkxwIDAQAB\n" +
@@ -100,16 +100,16 @@
           "7jQrMYh84CGbHyYL6sUCQAza6oSLNO2lI2NUbr4CwbTyc98K2Flo97A1jchkcdDb\n" +
           "Vfp6x30YlCF4sCPqSxKCIMGGTgzgDzldIpsjPiQROfQ=\n" +
           "-----END RSA PRIVATE KEY-----\n",
-        rsaEncryptor: {},
-        rsaDecryptor: {},
-        hybird_title: "AES与RSA 混合加密Demo"
+        m_rsaEncryptor: {},
+        m_rsaDecryptor: {},
+        m_hybirdTitle: "AES与RSA 混合加密Demo"
       };
     },
     methods: {
       //-------------------------------------------------------------------------
-      aesEncrypt() {
+      __onClickAesEncrypt() {
         let plaintext = this.$refs.aesPlainText.value;
-        let encryptData = this.__aesEncrypt(this.iv, this.key, plaintext);
+        let encryptData = this.__aesEncrypt(this.m_aesIV, this.m_aesKey, plaintext);
         this.$refs.aesCiphertext.value = encryptData;
       },
       //-------------------------------------------------------------------------
@@ -124,9 +124,9 @@
         return encrypted.toString();
       },
       //-------------------------------------------------------------------------
-      aesDecrypt() {
+      __onClickAesDecrypt() {
         let ciphertext = this.$refs.aesCiphertext.value;
-        let decryptData = this.__aesDecrypt(this.iv, this.key, ciphertext);
+        let decryptData = this.__aesDecrypt(this.m_aesIV, this.m_aesKey, ciphertext);
         this.$refs.aesDecryptedCiphertext.value = decryptData;
       },
       //-------------------------------------------------------------------------
@@ -140,35 +140,35 @@
         return decryptText.replace(/\"/g, "");
       },
       //-------------------------------------------------------------------------
-      rsaEncrypt() {
+      __onClickRsaEncrypt() {
         let plaintext = this.$refs.rsaPlaintext.value;
         this.$refs.rsaCiphertext.value = this.__rsaEncrypt(plaintext);
       },
       //-------------------------------------------------------------------------
       __rsaEncrypt(content) {
-        return this.rsaEncryptor.encrypt(content);
+        return this.m_rsaEncryptor.encrypt(content);
       },
       //-------------------------------------------------------------------------
-      rsaDecrypt() {
+      __onClickRSADecrypt() {
         let ciphertext = this.$refs.rsaCiphertext.value;
         this.$refs.rsaDecryptedCiphertext.value = this.__rsaDecrypt(ciphertext);
       },
       //-------------------------------------------------------------------------
       __rsaDecrypt(content) {
-        return this.rsaDecryptor.decrypt(content);
+        return this.m_rsaDecryptor.decrypt(content);
       },
       //-------------------------------------------------------------------------
-      getRandomAESKey() {
+      __getRandomAESKey() {
         return (
           Math.random().toString(36).substring(2, 10) +
           Math.random().toString(36).substring(2, 10)
         );
       },
       //-------------------------------------------------------------------------
-      /* IFTRUE_isRelase */
-      hybirdEncrypt() {
-        const iv = this.getRandomAESKey();
-        const key = this.getRandomAESKey();
+      /* IFTRUE_isRelease */
+      __onClickHybirdEncrypt() {
+        const iv = this.__getRandomAESKey();
+        const key = this.__getRandomAESKey();
         let plaintext = this.$refs.hybirdPlaintext.value;
         let originInfo = {iv: iv, key: key, data: plaintext};
 
@@ -189,7 +189,7 @@
         };
       },
       //-------------------------------------------------------------------------
-      hybirdDecrypt() {
+      __onClickHybirdDecrypt() {
         let ciphertext = this.$refs.hybirdCiphertext.value;
         let encryptInfo = JSON.parse(ciphertext);
         let decryptData = this.__hybirdDecrypt(encryptInfo);
@@ -197,23 +197,23 @@
       },
       //-------------------------------------------------------------------------
       __hybirdDecrypt(encryptInfo) {
-        const iv = this.rsaDecryptor.decrypt(encryptInfo.iv);
-        const key = this.rsaDecryptor.decrypt(encryptInfo.key);
+        const iv = this.m_rsaDecryptor.decrypt(encryptInfo.iv);
+        const key = this.m_rsaDecryptor.decrypt(encryptInfo.key);
         const data = encryptInfo.data;
         return this.__aesDecrypt(iv, key, data);
       }
-      /*FITRUE_isRelase */
+      /*FITRUE_isRelease */
       //-------------------------------------------------------------------------
     },
     mounted() {
       //-------------------------------------------------------------------------
-      this.key = CryptoJS.enc.Utf8.parse("0123456789abcdef");
-      this.iv = CryptoJS.enc.Utf8.parse("abcdef0123456789");
+      this.m_aesKey = CryptoJS.enc.Utf8.parse("0123456789abcdef");
+      this.m_aesIV = CryptoJS.enc.Utf8.parse("abcdef0123456789");
       //-------------------------------------------------------------------------
-      this.rsaEncryptor = new JSEncrypt();
-      this.rsaEncryptor.setPublicKey(this.rsa_pub_key);
-      this.rsaDecryptor = new JSEncrypt();
-      this.rsaDecryptor.setPrivateKey(this.rsa_pri_key);
+      this.m_rsaEncryptor = new JSEncrypt();
+      this.m_rsaEncryptor.setPublicKey(this.m_rsaPubKey);
+      this.m_rsaDecryptor = new JSEncrypt();
+      this.m_rsaDecryptor.setPrivateKey(this.m_rsaPriKey);
       //-------------------------------------------------------------------------
     }
   }
@@ -224,9 +224,9 @@
 <style scoped>
   h3 {
     margin: 40px 0 0;
-    /* IFTRUE_isRelase */
+    /* IFTRUE_isRelease */
     text-align: left;
-    /*FITRUE_isRelase */
+    /*FITRUE_isRelease */
     vertical-align: middle;
   }
 

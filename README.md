@@ -13,7 +13,8 @@
     your code (vue\js\css)
     /*FITRUE_yourFlagName */
     ```
-
+- 防止被调试
+    -
 
 ## Build Setup
 

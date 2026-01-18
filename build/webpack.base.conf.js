@@ -5,8 +5,8 @@ const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
 console.log("Build: ENV_CONFIG=" + process.env.ENV_CONFIG);
-console.log("Build:" + (process.env.ENV_CONFIG === "prod"));
-console.log("Build:" + (process.env.ENV_CONFIG === "test"));
+console.log("Build: isRelease=" + (process.env.ENV_CONFIG === "prod"));
+console.log("Build: isBeta=" + (process.env.ENV_CONFIG === "test"));
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
@@ -27,7 +27,7 @@ const conditionalCompiler = {
   loader: 'js-conditional-compile-loader',
   options: {
     isBeta: (process.env.ENV_CONFIG !== "prod") ? true : false,
-    isRelase: (process.env.ENV_CONFIG === "prod") ? true : false
+    isRelease: (process.env.ENV_CONFIG === "prod") ? true : false
   }
 }
 
